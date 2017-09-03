@@ -21,6 +21,7 @@ public class Notepad extends AppCompatActivity {
         setContentView(R.layout.activity_notepad);
         //Initialize the DrawingView
         drawView=(DrawingView) findViewById(R.id.drawingView);
+        drawView.invalidate();
         //Initialize all the color buttons and delete button
         final Button button1=(Button) findViewById(R.id.color1);
         final Button button2=(Button) findViewById(R.id.color2);
@@ -33,8 +34,12 @@ public class Notepad extends AppCompatActivity {
         colors[1]=ContextCompat.getColor(getApplicationContext(), R.color.color2);
         colors[2]=ContextCompat.getColor(getApplicationContext(), R.color.color3);
         colors[3]=ContextCompat.getColor(getApplicationContext(), R.color.color4);
-        System.out.println(drawView.getClass().getName());
 
+        unpress(list,prev);
+        button1.setBackgroundResource(R.drawable.paint1_pressed);
+        button1.setTag("pressed");
+        prev=1;
+        drawView.setColor(colors[0]);
 
         //Make all the different color stroke buttons pretty repetitive and could be improved(I hope)
         button1.setOnClickListener(new View.OnClickListener() {
@@ -46,9 +51,6 @@ public class Notepad extends AppCompatActivity {
                 button1.setBackgroundResource(R.drawable.paint1_pressed);
                 button1.setTag("pressed");
                 prev=1;
-                for(int i=0;i<colors.length;i++){
-                    System.out.println(colors[i]+" ");
-                }
                 drawView.setColor(colors[0]);
             }
         });
@@ -94,7 +96,7 @@ public class Notepad extends AppCompatActivity {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                drawView.erase();
+                drawView.undo();
             }
         });
 
