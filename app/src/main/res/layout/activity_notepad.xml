@@ -1,0 +1,77 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android2="http://schemas.android.com/apk/lib/anirudh.mathsketch"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0099cc"
+    tools:context="anirudh.mathsketch.Notepad">
+
+    <RelativeLayout
+        android:id="@+id/rl1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <anirudh.mathsketch.DrawingView
+            android:id="@+id/drawingView"
+            android:background="#ffffff"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <RelativeLayout
+            android:id="@+id/palette"
+            android:layout_alignBottom="@id/drawingView"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="@color/colorPrimaryDark"
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            >
+            <Button
+                android:tag="pressed"
+                android:id="@+id/color1"
+                android:layout_centerVertical="true"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/paint1_pressed"
+                />
+
+            <Button
+                android:tag="notpressed"
+                android:id="@+id/color2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/paint2"
+                android:layout_alignBaseline="@+id/color1"
+                android:layout_toEndOf="@+id/color1"
+                android:layout_marginStart="15dp" />
+            <Button
+                android:tag="notpressed"
+                android:id="@+id/color3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/paint3"
+                android:layout_alignBaseline="@+id/color2"
+                android:layout_toEndOf="@+id/color2"
+                android:layout_marginStart="15dp" />
+            <Button
+                android:tag="notpressed"
+                android:id="@+id/color4"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/paint4"
+                android:layout_alignBaseline="@+id/color3"
+                android:layout_toEndOf="@+id/color3"
+                android:layout_marginStart="15dp" />
+
+            <Button
+                android:id="@+id/delete"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@drawable/delete"
+                android:layout_marginStart="18dp"
+                android:layout_alignParentBottom="true"
+                android:layout_toEndOf="@+id/color4" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+</FrameLayout>

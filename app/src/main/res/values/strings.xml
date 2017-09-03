@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MathSketch</string>
+    <string name="color1">#000000</string>
+    <string name="color2">#df2fd9</string>
+    <string name="color3">#2fff86</string>
+    <string name="color4">#ff2f6d</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+</resources>
