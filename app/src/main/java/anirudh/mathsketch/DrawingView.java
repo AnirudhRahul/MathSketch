@@ -11,6 +11,9 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import static android.R.attr.path;
 
@@ -62,7 +65,7 @@ public class DrawingView extends View{
     @Override
     protected void onDraw(Canvas canvas) {
         //Draw out all your strokes
-
+        combineStrokes();
         for (Path path : currentMoveList) {
             canvas.drawPath(path, drawPaint);
         }
@@ -72,6 +75,16 @@ public class DrawingView extends View{
             canvas.drawPath(path, drawPaint);
         }
         setColor(currentcolor, false);
+
+    }
+    public void combineStrokes(){
+        Collections.sort(strokeRecord);
+        if(strokeRecord.size()>1)
+        for(int i=strokeRecord.size()-2;i>=0;i--){
+            if(strokeRecord.get(i).combine(strokeRecord.get(i+1))){
+                strokeRecord.remove(i+1);
+            }
+        }
 
     }
     //Detects touches and tells us where to draw with paths
@@ -93,7 +106,7 @@ public class DrawingView extends View{
                 moveList.add(drawPath);
                 ArrayList<Path> temp=new ArrayList();
                 temp.add(drawPath);
-                strokeRecord.add(new StrokeGroup(temp,currentcolor));
+                strokeRecord.add(new StrokeGroup(temp,currentcolor, System.currentTimeMillis()));
                 //reset drawpath since it only tracks
                 //individual paths(strokes)
                 drawPath=new Path();
