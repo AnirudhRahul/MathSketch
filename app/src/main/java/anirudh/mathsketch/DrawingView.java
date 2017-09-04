@@ -12,6 +12,8 @@ import android.view.View;
 
 import java.util.ArrayList;
 
+import static android.R.attr.path;
+
 
 public class DrawingView extends View{
 
@@ -20,10 +22,14 @@ public class DrawingView extends View{
         invalidate();
         setupDrawing();
     }
+    //Tracks current color
+    private int currentcolor;
     //Create a LIST of Paths so we can keep track of how many paths(basically strokes)
     // we have drawn and erase them if needed
     private ArrayList<Path> moveList=new ArrayList<>();
     private ArrayList<Path> currentMoveList=new ArrayList<>();
+    //Create a list of objects so we can group strokes which are one after the other togethor
+    private ArrayList<StrokeGroup> strokeRecord=new ArrayList<>();
     //records individual drawing paths(strokes)
     private Path drawPath;
     //drawpaint is basically holds the characteristics of
@@ -60,9 +66,13 @@ public class DrawingView extends View{
         for (Path path : currentMoveList) {
             canvas.drawPath(path, drawPaint);
         }
-        for (Path path : moveList) {
+        for (StrokeGroup stroke: strokeRecord) {
+            setColor(stroke.getColor(), false);
+            for(Path path:stroke.getPathset())
             canvas.drawPath(path, drawPaint);
         }
+        setColor(currentcolor, false);
+
     }
     //Detects touches and tells us where to draw with paths
     @Override
@@ -81,6 +91,9 @@ public class DrawingView extends View{
                 drawPath.lineTo(touchX, touchY);
                 drawCanvas.drawPath(drawPath, drawPaint);
                 moveList.add(drawPath);
+                ArrayList<Path> temp=new ArrayList();
+                temp.add(drawPath);
+                strokeRecord.add(new StrokeGroup(temp,currentcolor));
                 //reset drawpath since it only tracks
                 //individual paths(strokes)
                 drawPath=new Path();
@@ -92,8 +105,9 @@ public class DrawingView extends View{
         invalidate();
         return true;
     }
-    public void setColor(int newColor){
-
+    public void setColor(int newColor, boolean isbutton){
+        if(isbutton)
+        currentcolor=newColor;
         drawPaint.setColor(newColor);
     }
     public void erase(){
@@ -102,8 +116,8 @@ public class DrawingView extends View{
         invalidate();
     }
     public void undo() {
-        if (moveList.size() > 0) {
-            moveList.remove(moveList.size() - 1);
+        if (strokeRecord.size() > 0) {
+            strokeRecord.remove(strokeRecord.size() - 1);
             invalidate();
         }
     }
