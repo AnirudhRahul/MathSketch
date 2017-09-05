@@ -6,9 +6,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.media.Image;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,12 +19,15 @@ import java.util.Collection;
 import java.util.Collections;
 
 import static android.R.attr.path;
+import static anirudh.mathsketch.R.id.prevStroke;
 
 
 public class DrawingView extends View{
+    private int initialWritingColor;
 
     public DrawingView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initialWritingColor=ContextCompat.getColor(context, R.color.initialWritingColor);
         invalidate();
         setupDrawing();
     }
@@ -61,27 +67,53 @@ public class DrawingView extends View{
         canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         drawCanvas = new Canvas(canvasBitmap);
     }
+    public void lastBitmap(ImageView prevstroke){
+        if(strokeRecord.size()==0)
+            return;
+        Bitmap newBitmap=Bitmap.createBitmap(500,500,Bitmap.Config.ARGB_8888);
+//        newBitmap.eraseColor(android.graphics.Color.GREEN);
+
+        Canvas newCanvas=new Canvas(newBitmap);
+
+        for(Path path:strokeRecord.get(strokeRecord.size()-1).pathset)
+        newCanvas.drawPath(path,drawPaint);
+
+        prevstroke.setImageBitmap(newBitmap);
+
+
+    }
+
     //THIS IS WHERE ALL THE DRAWING HAPPENS
     @Override
     protected void onDraw(Canvas canvas) {
         //Draw out all your strokes
+        boolean redraw=false;
         combineStrokes();
         for (Path path : currentMoveList) {
             canvas.drawPath(path, drawPaint);
         }
+        int i=0;
         for (StrokeGroup stroke: strokeRecord) {
             setColor(stroke.getColor(), false);
+            if(strokeRecord.size()-1==i&&System.currentTimeMillis()-stroke.time>1000) {
+                setColor(initialWritingColor, false);
+                redraw=false;
+            }
+            else
+                redraw=true;
             for(Path path:stroke.getPathset())
             canvas.drawPath(path, drawPaint);
+            i++;
         }
         setColor(currentcolor, false);
+        if(redraw)
+            invalidate();
 
     }
     public void combineStrokes(){
-        Collections.sort(strokeRecord);
         if(strokeRecord.size()>1)
         for(int i=strokeRecord.size()-2;i>=0;i--){
-            if(strokeRecord.get(i).combine(strokeRecord.get(i+1))){
+            if(strokeRecord.get(i).combine(strokeRecord.get(i+1),getContext())){
                 strokeRecord.remove(i+1);
             }
         }

@@ -1,6 +1,8 @@
 package anirudh.mathsketch;
 
+import android.content.Context;
 import android.graphics.Path;
+import android.support.v4.content.ContextCompat;
 
 import java.util.ArrayList;
 
@@ -14,12 +16,15 @@ public class StrokeGroup implements Comparable<StrokeGroup> {
     ArrayList<Path> pathset=new ArrayList<>();
     int color=0;
     long time=0;
+    public String toString(){
+        return ""+time;
+    }
     public StrokeGroup(ArrayList<Path> list, int color, long time){
         this.color=color;
         this.time=time;
         pathset.addAll(list);
     }
-    public boolean combine(StrokeGroup other){
+    public boolean combine(StrokeGroup other, Context c){
 //        if(other.color!=color)
 //            return false;
         if(Math.abs(other.time-time)<1000){

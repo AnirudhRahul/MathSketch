@@ -8,8 +8,9 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
         import android.widget.ImageButton;
+import android.widget.ImageView;
 
-        public class Notepad extends AppCompatActivity {
+public class Notepad extends AppCompatActivity {
             private DrawingView drawView;
             private ImageButton currPaint;
             private int prev=1;
@@ -34,7 +35,7 @@ import android.widget.Button;
         colors[1]=ContextCompat.getColor(getApplicationContext(), R.color.color2);
         colors[2]=ContextCompat.getColor(getApplicationContext(), R.color.color3);
         colors[3]=ContextCompat.getColor(getApplicationContext(), R.color.color4);
-
+                final ImageView prevstroke=(ImageView)findViewById(R.id.prevStroke);
         unpress(list,prev);
         button1.setBackgroundResource(R.drawable.paint1_pressed);
         button1.setTag("pressed");
@@ -52,6 +53,7 @@ import android.widget.Button;
                 button1.setTag("pressed");
                 prev=1;
                 drawView.setColor(colors[0], true);
+                drawView.lastBitmap(prevstroke);
             }
         });
         button2.setOnClickListener(new View.OnClickListener() {
@@ -64,6 +66,7 @@ import android.widget.Button;
                 button2.setTag("pressed");
                 prev=2;
                 drawView.setColor(colors[1], true);
+                drawView.lastBitmap(prevstroke);
 
             }
         });
@@ -77,6 +80,8 @@ import android.widget.Button;
                 button3.setTag("pressed");
                 prev=3;
                 drawView.setColor(colors[2], true);
+                drawView.lastBitmap(prevstroke);
+
             }
         });
         button4.setOnClickListener(new View.OnClickListener() {
@@ -89,6 +94,7 @@ import android.widget.Button;
                 button4.setTag("pressed");
                 prev=4;
                 drawView.setColor(colors[3], true);
+                drawView.lastBitmap(prevstroke);
             }
         });
 
