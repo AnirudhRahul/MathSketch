@@ -6,7 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.media.Image;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -14,12 +15,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
-import static android.R.attr.path;
-import static anirudh.mathsketch.R.id.prevStroke;
 
 
 public class DrawingView extends View{
@@ -31,6 +26,7 @@ public class DrawingView extends View{
         invalidate();
         setupDrawing();
     }
+    private ImageView prevstroke;
     //Tracks current color
     private int currentcolor;
     //Create a LIST of Paths so we can keep track of how many paths(basically strokes)
@@ -43,7 +39,7 @@ public class DrawingView extends View{
     private Path drawPath;
     //drawpaint is basically holds the characteristics of
     // your "brush" like the width, stroke type, etc.
-    private Paint drawPaint, canvasPaint;
+    private Paint drawPaint;
     //initial color
     private int paintColor = 0xffffff;
     private Canvas drawCanvas;
@@ -58,7 +54,6 @@ public class DrawingView extends View{
         drawPaint.setStyle(Paint.Style.STROKE);
         drawPaint.setStrokeJoin(Paint.Join.ROUND);
         drawPaint.setStrokeCap(Paint.Cap.ROUND);
-        canvasPaint = new Paint(Paint.DITHER_FLAG);
     }
     //In case screen orientation changes
     @Override
@@ -67,22 +62,61 @@ public class DrawingView extends View{
         canvasBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         drawCanvas = new Canvas(canvasBitmap);
     }
-    public void lastBitmap(ImageView prevstroke){
+    public void setImageView(ImageView v){
+        prevstroke=v;
+    }
+    public RectF maxRect(ArrayList<RectF> list){
+        if(list.size()==1)
+            return list.get(0);
+        float left=list.get(0).left;
+        float right=list.get(0).right;
+        float top=list.get(0).top;
+        float bottom=list.get(0).bottom;
+        for(int i=1;i<list.size();i++){
+            float curleft=list.get(i).left;
+            float curright=list.get(i).right;
+            float curtop=list.get(i).top;
+            float curbottom=list.get(i).bottom;
+            if(curleft<left)
+                left=curleft;
+            if(curbottom>bottom)
+                bottom=curbottom;
+            if(curright>right)
+                right=curright;
+            if(curtop<top)
+                top=curtop;
+        }
+        return new RectF(left,top,right,bottom);
+    }
+    public void lastBitmap(){
         if(strokeRecord.size()==0)
             return;
-        Bitmap newBitmap=Bitmap.createBitmap(500,500,Bitmap.Config.ARGB_8888);
 //        newBitmap.eraseColor(android.graphics.Color.GREEN);
+        StrokeGroup lastStroke=strokeRecord.get(strokeRecord.size()-1);
+        ArrayList<RectF> rectFArrayList=new ArrayList<>();
+        for(Path path:lastStroke.pathset) {
+            RectF temp=new RectF();
+            path.computeBounds(temp, false);
+            rectFArrayList.add(temp);
+        }
+        RectF bmpRect=maxRect(rectFArrayList);
 
+        Bitmap newBitmap=Bitmap.createBitmap((int)(bmpRect.right-bmpRect.left+75), (int)(bmpRect.bottom-bmpRect.top+40),Bitmap.Config.ARGB_8888);
         Canvas newCanvas=new Canvas(newBitmap);
+        for(Path path:lastStroke.pathset) {
+            Path temp=new Path(path);
+            temp.offset(-bmpRect.left+50,-bmpRect.top+20);
+            newCanvas.drawPath(temp, drawPaint);
 
-        for(Path path:strokeRecord.get(strokeRecord.size()-1).pathset)
-        newCanvas.drawPath(path,drawPaint);
+        }
 
         prevstroke.setImageBitmap(newBitmap);
 
 
     }
-
+    public void drawRect(RectF rectangle){
+        drawCanvas.drawRect(rectangle, drawPaint);
+    }
     //THIS IS WHERE ALL THE DRAWING HAPPENS
     @Override
     protected void onDraw(Canvas canvas) {
@@ -96,14 +130,17 @@ public class DrawingView extends View{
         for (StrokeGroup stroke: strokeRecord) {
             setColor(stroke.getColor(), false);
             if(strokeRecord.size()-1==i&&System.currentTimeMillis()-stroke.time>1000) {
+                lastBitmap();
                 setColor(initialWritingColor, false);
                 redraw=false;
             }
             else
                 redraw=true;
-            for(Path path:stroke.getPathset())
-            canvas.drawPath(path, drawPaint);
+            for(Path path:stroke.getPathset()) {
+                canvas.drawPath(path, drawPaint);
+            }
             i++;
+
         }
         setColor(currentcolor, false);
         if(redraw)

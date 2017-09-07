@@ -20,8 +20,10 @@ public class Notepad extends AppCompatActivity {
                 this.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 super.onCreate(savedInstanceState);
                 setContentView(R.layout.activity_notepad);
+                ImageView prevstroke=(ImageView)findViewById(R.id.prevStroke);
                 //Initialize the DrawingView
                 drawView=(DrawingView) findViewById(R.id.drawingView);
+                drawView.setImageView(prevstroke);
                 drawView.invalidate();
                 //Initialize all the color buttons and delete button
                 final Button button1=(Button) findViewById(R.id.color1);
@@ -35,7 +37,6 @@ public class Notepad extends AppCompatActivity {
         colors[1]=ContextCompat.getColor(getApplicationContext(), R.color.color2);
         colors[2]=ContextCompat.getColor(getApplicationContext(), R.color.color3);
         colors[3]=ContextCompat.getColor(getApplicationContext(), R.color.color4);
-                final ImageView prevstroke=(ImageView)findViewById(R.id.prevStroke);
         unpress(list,prev);
         button1.setBackgroundResource(R.drawable.paint1_pressed);
         button1.setTag("pressed");
@@ -53,7 +54,6 @@ public class Notepad extends AppCompatActivity {
                 button1.setTag("pressed");
                 prev=1;
                 drawView.setColor(colors[0], true);
-                drawView.lastBitmap(prevstroke);
             }
         });
         button2.setOnClickListener(new View.OnClickListener() {
@@ -66,7 +66,6 @@ public class Notepad extends AppCompatActivity {
                 button2.setTag("pressed");
                 prev=2;
                 drawView.setColor(colors[1], true);
-                drawView.lastBitmap(prevstroke);
 
             }
         });
@@ -80,7 +79,6 @@ public class Notepad extends AppCompatActivity {
                 button3.setTag("pressed");
                 prev=3;
                 drawView.setColor(colors[2], true);
-                drawView.lastBitmap(prevstroke);
 
             }
         });
@@ -94,7 +92,6 @@ public class Notepad extends AppCompatActivity {
                 button4.setTag("pressed");
                 prev=4;
                 drawView.setColor(colors[3], true);
-                drawView.lastBitmap(prevstroke);
             }
         });
 
