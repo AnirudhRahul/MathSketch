@@ -13,6 +13,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
 
 import java.util.ArrayList;
 
@@ -111,8 +113,8 @@ public class DrawingView extends View{
         }
 
         prevstroke.setImageBitmap(newBitmap);
-
-
+//        Mat mat=new Mat();
+//        Utils.bitmapToMat(newBitmap,mat);
     }
     public void drawRect(RectF rectangle){
         drawCanvas.drawRect(rectangle, drawPaint);

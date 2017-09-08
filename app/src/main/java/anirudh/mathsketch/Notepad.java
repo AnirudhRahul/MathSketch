@@ -1,14 +1,17 @@
 package anirudh.mathsketch;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-        import android.widget.ImageButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+
+import org.opencv.android.OpenCVLoader;
+import org.opencv.imgproc.Imgproc;
 
 public class Notepad extends AppCompatActivity {
             private DrawingView drawView;
@@ -20,6 +23,11 @@ public class Notepad extends AppCompatActivity {
                 this.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 super.onCreate(savedInstanceState);
                 setContentView(R.layout.activity_notepad);
+                if(OpenCVLoader.initDebug()){
+                    System.out.println("we loaded");
+                }
+                else
+                    System.out.println("we gahn");
                 ImageView prevstroke=(ImageView)findViewById(R.id.prevStroke);
                 //Initialize the DrawingView
                 drawView=(DrawingView) findViewById(R.id.drawingView);
