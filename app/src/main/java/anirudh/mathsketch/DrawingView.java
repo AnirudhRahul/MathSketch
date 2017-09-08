@@ -1,30 +1,47 @@
 package anirudh.mathsketch;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.googlecode.tesseract.android.TessBaseAPI;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 
 public class DrawingView extends View{
     private int initialWritingColor;
+    String datapath="";
+    AssetManager assetManager;
 
     public DrawingView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initialWritingColor=ContextCompat.getColor(context, R.color.initialWritingColor);
         invalidate();
         setupDrawing();
+    }
+    public void setdatpath(File in){
+        datapath = in+ "/tesseract/";
+    }
+    public void setAssetManager(AssetManager a){
+        assetManager=a;
     }
     private ImageView prevstroke;
     //Tracks current color
@@ -110,6 +127,14 @@ public class DrawingView extends View{
 
         }
 
+        checkFile(new File(datapath+"tessdata/"));
+        TessBaseAPI baseAPI = new TessBaseAPI();
+        baseAPI.init(datapath, "eng");
+        String result="";
+        baseAPI.setImage(newBitmap);
+        result=baseAPI.getUTF8Text();
+        Toast temptoast=Toast.makeText(getContext(),result,Toast.LENGTH_LONG);
+        temptoast.show();
         prevstroke.setImageBitmap(newBitmap);
 
 
@@ -203,4 +228,53 @@ public class DrawingView extends View{
             invalidate();
         }
     }
+
+
+     void copyFiles() {
+        try {
+            //location we want the file to be at
+            String filepath = datapath + "/tessdata/eng.traineddata";
+
+            //get access to AssetManager
+
+
+            //open byte streams for reading/writing
+            InputStream instream = assetManager.open("tessdata/eng.traineddata");
+            OutputStream outstream = new FileOutputStream(filepath);
+
+            //copy the file to the location specified by filepath
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = instream.read(buffer)) != -1) {
+                outstream.write(buffer, 0, read);
+            }
+            outstream.flush();
+            outstream.close();
+            instream.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void checkFile(File dir) {
+        //directory does not exist, but we can successfully create it
+        if (!dir.exists()&& dir.mkdirs()){
+            copyFiles();
+        }
+        //The directory exists, but there is no data file in it
+        if(dir.exists()) {
+            String datafilepath = datapath+ "/tessdata/eng.traineddata";
+            File datafile = new File(datafilepath);
+            if (!datafile.exists()) {
+                copyFiles();
+            }
+        }
+
+    }
+
+
+
 }

@@ -1,14 +1,23 @@
 package anirudh.mathsketch;
 
-import android.graphics.Color;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-        import android.widget.ImageButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+
+import com.googlecode.tesseract.android.TessBaseAPI;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class Notepad extends AppCompatActivity {
             private DrawingView drawView;
@@ -20,10 +29,14 @@ public class Notepad extends AppCompatActivity {
                 this.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 super.onCreate(savedInstanceState);
                 setContentView(R.layout.activity_notepad);
+
                 ImageView prevstroke=(ImageView)findViewById(R.id.prevStroke);
                 //Initialize the DrawingView
+
                 drawView=(DrawingView) findViewById(R.id.drawingView);
                 drawView.setImageView(prevstroke);
+                drawView.setdatpath(getFilesDir());
+                drawView.setAssetManager(getAssets());
                 drawView.invalidate();
                 //Initialize all the color buttons and delete button
                 final Button button1=(Button) findViewById(R.id.color1);
@@ -119,6 +132,7 @@ public class Notepad extends AppCompatActivity {
                 list[i].setBackgroundResource(R.drawable.paint4);
 
     }
+
 
 
 }
